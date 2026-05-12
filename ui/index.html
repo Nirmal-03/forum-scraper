@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Scraper — UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f0f23;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #2a2a4a;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #b0b0d0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f0f23;
+            border: 1px solid #3a3a5a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        input::placeholder {
+            color: #555;
+        }
+
+        .url-input {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            background: linear-gradient(135deg, #00d4ff, #0090ff);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #2a2a4a;
+            color: #b0b0d0;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a5a;
+            box-shadow: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-bar {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: #16213e;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #2a2a4a;
+        }
+
+        .status-bar.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .results-header h2 {
+            color: #00d4ff;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            background: #00d4ff22;
+            color: #00d4ff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .error-box {
+            background: #2d1b1b;
+            border: 1px solid #ff4444;
+            border-radius: 8px;
+            padding: 1.25rem;
+            color: #ff8888;
+        }
+
+        .error-box .error-code {
+            font-weight: 700;
+            color: #ff4444;
+            margin-bottom: 0.25rem;
+        }
+
+        .comments-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .comments-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .comments-list::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        .comments-list::-webkit-scrollbar-thumb {
+            background: #3a3a5a;
+            border-radius: 3px;
+        }
+
+        .comment {
+            background: #0f0f23;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .comment:hover {
+            border-color: #3a3a6a;
+        }
+
+        .config-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2a2a4a;
+        }
+
+        .config-section label {
+            font-size: 0.8rem;
+        }
+
+        .config-section input {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .json-toggle {
+            margin-top: 1rem;
+        }
+
+        .json-output {
+            display: none;
+            background: #0a0a1a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+            max-height: 400px;
+            overflow: auto;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            color: #aaa;
+        }
+
+        .json-output.visible {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #555;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Forum Review Scraper</h1>
+            <p>Scrape posts and discussions from Reddit & Product Hunt through a unified API</p>
+        </header>
+
+        <!-- Input Form -->
+        <div class="card">
+            <div class="form-group">
+                <label>URL</label>
+                <input
+                    type="url"
+                    id="urlInput"
+                    class="url-input"
+                    placeholder="https://www.reddit.com/r/Zoho/"
+                >
+                <small id="urlHint" style="color: #666; margin-top: 0.3rem; display: block;">Enter a subreddit URL to fetch all posts</small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Forum</label>
+                    <select id="forumSelect" onchange="onForumChange()">
+                        <option value="reddit">Reddit</option>
+                        <option value="producthunt">Product Hunt</option>
+                        <option value="stackoverflow">Stack Overflow</option>
+                        <option value="webmastersun">WebmasterSun</option>
+                        <option value="quora">Quora</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Limit</label>
+                    <input type="number" id="limitInput" value="100" min="1" max="10000">
+                </div>
+                <div class="form-group">
+                    <label>Sort</label>
+                    <select id="sortSelect">
+                        <option value="best">Best</option>
+                        <option value="hot">Hot</option>
+                        <option value="new">New</option>
+                        <option value="top">Top</option>
+                        <option value="rising">Rising</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>API Base URL</label>
+                    <input type="text" id="apiBaseUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <div class="actions">
+                    <button class="btn" id="scrapeBtn" onclick="startScrape()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                        </svg>
+                        Scrape
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearResults()">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar" id="statusBar">
+            <div class="spinner"></div>
+            <span class="status-text" id="statusText">Fetching posts...</span>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" style="display: none;">
+            <div class="card">
+                <div class="results-header">
+                    <h2>Results</h2>
+                    <span class="badge" id="countBadge">0 posts</span>
+                </div>
+
+                <!-- Error Display -->
+                <div class="error-box" id="errorBox" style="display: none;">
+                    <div class="error-code" id="errorCode"></div>
+                    <div id="errorMessage"></div>
+                </div>
+
+                <!-- Comments List -->
+                <div class="comments-list" id="commentsList"></div>
+
+                <!-- JSON Toggle -->
+                <div class="json-toggle">
+                    <button class="btn btn-secondary" onclick="toggleJson()">Toggle Raw JSON</button>
+                    <div class="json-output" id="jsonOutput"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="card">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <p>Enter a URL and click "Scrape" to fetch data</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastResponse = null;
+
+        function onForumChange() {
+            const forum = document.getElementById('forumSelect').value;
+            const urlInput = document.getElementById('urlInput');
+            const hint = document.getElementById('urlHint');
+            const sortSelect = document.getElementById('sortSelect');
+
+            if (forum === 'reddit') {
+                urlInput.placeholder = 'https://www.reddit.com/r/Zoho/';
+                hint.textContent = 'Enter a subreddit URL to fetch all posts';
+                sortSelect.innerHTML = `
+                    <option value="best">Best</option>
+                    <option value="hot">Hot</option>
+                    <option value="new">New</option>
+                    <option value="top">Top</option>
+                    <option value="rising">Rising</option>
+                `;
+            } else if (forum === 'producthunt') {
+                urlInput.placeholder = 'https://www.producthunt.com/p/zoho';
+                hint.textContent = 'Enter a Product Hunt community URL: /p/{product} or /products/{product}';
+                sortSelect.innerHTML = `
+                    <option value="trending">Trending</option>
+                    <option value="popular">Popular</option>
+                    <option value="featured">Featured</option>
+                    <option value="new">New</option>
+                `;
+            } else if (forum === 'stackoverflow') {
+                urlInput.placeholder = 'https://stackoverflow.com/questions/tagged/zohobooks';
+                hint.textContent = 'Enter a Stack Overflow tagged URL: /questions/tagged/{tag}';
+                sortSelect.innerHTML = `
+                    <option value="activity">Active</option>
+                    <option value="creation">Newest</option>
+                    <option value="votes">Score</option>
+                    <option value="hot">Hot</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                `;
+            } else if (forum === 'webmastersun') {
+                urlInput.placeholder = 'https://www.webmastersun.com/search/739149/?q=google&o=date';
+                hint.textContent = 'Paste a WebmasterSun search URL directly from the browser';
+                sortSelect.innerHTML = `<option value="">Default</option>`;
+            } else if (forum === 'quora') {
+                urlInput.placeholder = 'https://www.quora.com/topic/Zoho-CRM-1';
+                hint.textContent = 'Paste a Quora topic URL to fetch all questions under it';
+                sortSelect.innerHTML = `<option value="">Default</option>`;
+            }
+        }
+
+        async function startScrape() {
+            const url = document.getElementById('urlInput').value.trim();
+            const forum = document.getElementById('forumSelect').value;
+            const limit = parseInt(document.getElementById('limitInput').value) || 100;
+            const sort = document.getElementById('sortSelect').value;
+            const apiBase = document.getElementById('apiBaseUrl').value.trim();
+
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            if (!apiBase) {
+                alert('Please enter the API base URL');
+                return;
+            }
+
+            // Show loading
+            const btn = document.getElementById('scrapeBtn');
+            btn.disabled = true;
+            showStatus('Sending request to API...');
+            hideResults();
+
+            try {
+                const options = {};
+                options.sort = sort;
+
+                const requestBody = {
+                    forum: forum,
+                    url: url,
+                    limit: limit,
+                    options: options
+                };
+
+                showStatus('Fetching data... (this may take a while for large requests)');
+
+                const response = await fetch(`${apiBase}/api/v1/scrape`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    lastResponse = data;
+                    showResults(data);
+                } else {
+                    // Error response — may be in detail field
+                    const errorData = data.detail || data;
+                    lastResponse = errorData;
+                    showError(errorData);
+                }
+            } catch (err) {
+                showError({
+                    error_code: 'CONNECTION_ERROR',
+                    message: `Cannot reach API at ${apiBase}. Is the server running?`
+                });
+            } finally {
+                btn.disabled = false;
+                hideStatus();
+            }
+        }
+
+        function showResults(data) {
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('errorBox').style.display = 'none';
+            document.getElementById('jsonOutput').textContent = JSON.stringify(data, null, 2);
+
+            const list = document.getElementById('commentsList');
+            list.innerHTML = '';
+
+            // Reddit response (posts)
+            if (data.posts) {
+                document.getElementById('countBadge').textContent = `${data.total_fetched} posts`;
+
+                if (data.posts.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>No posts found</p></div>';
+                    return;
+                }
+
+                const forum = document.getElementById('forumSelect').value;
+
+                data.posts.forEach(post => {
+                    const el = document.createElement('div');
+                    el.className = 'comment';
+
+                    if (forum === 'producthunt') {
+                        el.innerHTML = `
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                                <span style="color:#ff6154;font-weight:600">${escapeHtml(post.author)}</span>
+                                <span style="color:#4caf50">▲ ${post.score}</span>
+                                <span style="color:#888">💬 ${post.num_comments} comments</span>
+                                ${post.link_flair_text ? '<span style="color:#aaa;font-size:0.8rem">' + escapeHtml(post.link_flair_text) + '</span>' : ''}
+                            </div>
+                            <div style="margin-bottom:0.5rem">
+                                <strong>${escapeHtml(post.title)}</strong>
+                            </div>
+                            ${post.selftext ? '<div style="color:#bbb;font-size:0.85rem;margin-top:0.5rem;line-height:1.6;white-space:pre-wrap;word-wrap:break-word">' + escapeHtml(post.selftext) + '</div>' : ''}
+                            <div style="margin-top:0.5rem;font-size:0.75rem;color:#666">
+                                <a href="${escapeHtml(post.url)}" target="_blank" style="color:#ff6154;text-decoration:none">View on Product Hunt ↗</a>
+                            </div>
+                        `;
+                    } else if (forum === 'stackoverflow') {
+                        const tags = post.link_flair_text ? post.link_flair_text.split(', ').map(t => `<span style="background:#3b4045;color:#9cc3db;padding:0.15rem 0.5rem;border-radius:4px;font-size:0.75rem">${escapeHtml(t)}</span>`).join(' ') : '';
+                        el.innerHTML = `
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                                <span style="color:#f48024;font-weight:600">${escapeHtml(post.author)}</span>
+                                <span style="color:#4caf50">▲ ${post.score}</span>
+                                <span style="color:#888">📝 ${post.num_comments} answers</span>
+                                <span style="color:#666;font-size:0.8rem">${post.is_self ? '✓ answered' : '○ unanswered'}</span>
+                            </div>
+                            <div style="margin-bottom:0.5rem">
+                                <strong>${escapeHtml(post.title)}</strong>
+                            </div>
+                            ${tags ? '<div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.5rem">' + tags + '</div>' : ''}
+                            ${post.selftext ? '<div style="color:#bbb;font-size:0.85rem;margin-top:0.5rem;line-height:1.6;max-height:150px;overflow:hidden;word-wrap:break-word">' + post.selftext + '</div>' : ''}
+                            <div style="margin-top:0.5rem;font-size:0.75rem;color:#666">
+                                <a href="${escapeHtml(post.url)}" target="_blank" style="color:#f48024;text-decoration:none">View on Stack Overflow ↗</a>
+                                &nbsp;|&nbsp; Asked: ${new Date(post.created_utc * 1000).toLocaleDateString()}
+                            </div>
+                        `;
+                    } else if (forum === 'webmastersun') {
+                        el.innerHTML = `
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                                <span style="color:#2ecc71;font-weight:600">${escapeHtml(post.author)}</span>
+                                ${post.link_flair_text ? '<span style="background:#2a2a4a;color:#aaa;padding:0.15rem 0.5rem;border-radius:4px;font-size:0.75rem">' + escapeHtml(post.link_flair_text) + '</span>' : ''}
+                                ${post.num_comments ? '<span style="color:#888;font-size:0.8rem">Post #' + post.num_comments + '</span>' : ''}
+                            </div>
+                            <div style="margin-bottom:0.5rem">
+                                <strong>${escapeHtml(post.title)}</strong>
+                            </div>
+                            ${post.selftext ? '<div style="color:#bbb;font-size:0.85rem;margin-top:0.5rem;line-height:1.6;white-space:pre-wrap;word-wrap:break-word">' + escapeHtml(post.selftext) + '</div>' : ''}
+                            <div style="margin-top:0.5rem;font-size:0.75rem;color:#666">
+                                <a href="${escapeHtml(post.url)}" target="_blank" style="color:#2ecc71;text-decoration:none">View on WebmasterSun ↗</a>
+                                ${post.created_utc ? '&nbsp;|&nbsp; ' + new Date(post.created_utc * 1000).toLocaleDateString() : ''}
+                            </div>
+                        `;
+                    } else if (forum === 'quora') {
+                        el.innerHTML = `
+                            <div style="margin-bottom:0.5rem">
+                                <strong>${escapeHtml(post.title)}</strong>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                                <span style="color:#b92b27;font-size:0.8rem">💬 ${post.num_comments} answers</span>
+                            </div>
+                            <div style="margin-top:0.5rem;font-size:0.75rem;color:#666">
+                                <a href="${escapeHtml(post.url)}" target="_blank" style="color:#b92b27;text-decoration:none">View on Quora ↗</a>
+                            </div>
+                        `;
+                    } else {
+                        el.innerHTML = `
+                            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+                                <span style="color:#00d4ff;font-weight:600">u/${escapeHtml(post.author)}</span>
+                                <span style="color:#4caf50">▲ ${post.score}</span>
+                                <span style="color:#888">💬 ${post.num_comments} comments</span>
+                                <span style="color:#666;font-size:0.8rem">${post.link_flair_text ? '[' + escapeHtml(post.link_flair_text) + ']' : ''}</span>
+                            </div>
+                            <div style="margin-bottom:0.5rem">
+                                <strong>${escapeHtml(post.title)}</strong>
+                            </div>
+                            ${post.selftext ? '<div style="color:#bbb;font-size:0.85rem;margin-top:0.5rem;line-height:1.6;white-space:pre-wrap;word-wrap:break-word">' + escapeHtml(post.selftext) + '</div>' : ''}
+                            <div style="margin-top:0.5rem;font-size:0.75rem;color:#666">
+                                <a href="${escapeHtml(post.permalink)}" target="_blank" style="color:#00d4ff;text-decoration:none">Open on Reddit ↗</a>
+                                &nbsp;|&nbsp; Upvote ratio: ${(post.upvote_ratio * 100).toFixed(0)}%
+                            </div>
+                        `;
+                    }
+                    list.appendChild(el);
+                });
+            }
+            else {
+                list.innerHTML = '<div class="empty-state"><p>No data returned</p></div>';
+            }
+        }
+
+        function showError(errorData) {
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('commentsList').innerHTML = '';
+            document.getElementById('countBadge').textContent = 'Error';
+
+            const errorBox = document.getElementById('errorBox');
+            errorBox.style.display = 'block';
+            document.getElementById('errorCode').textContent = errorData.error_code || 'ERROR';
+            document.getElementById('errorMessage').textContent = errorData.message || 'Unknown error';
+
+            document.getElementById('jsonOutput').textContent = JSON.stringify(errorData, null, 2);
+        }
+
+        function clearResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('jsonOutput').classList.remove('visible');
+            lastResponse = null;
+        }
+
+        function toggleJson() {
+            const el = document.getElementById('jsonOutput');
+            el.classList.toggle('visible');
+        }
+
+        function showStatus(text) {
+            const bar = document.getElementById('statusBar');
+            bar.classList.add('visible');
+            document.getElementById('statusText').textContent = text;
+        }
+
+        function hideStatus() {
+            document.getElementById('statusBar').classList.remove('visible');
+        }
+
+        function hideResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Allow Enter key to trigger scrape
+        document.getElementById('urlInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startScrape();
+        });
+    </script>
+</body>
+</html>
