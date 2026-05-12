@@ -348,7 +348,7 @@
             <div class="config-section">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>API Base URL</label>
-                    <input type="text" id="apiBaseUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
+                    <input type="text" id="apiBaseUrl" value="" placeholder="http://localhost:8000">
                 </div>
             </div>
 
@@ -462,7 +462,7 @@
             const forum = document.getElementById('forumSelect').value;
             const limit = parseInt(document.getElementById('limitInput').value) || 100;
             const sort = document.getElementById('sortSelect').value;
-            const apiBase = document.getElementById('apiBaseUrl').value.trim();
+            const apiBase = document.getElementById('apiBaseUrl').value.trim() || window.location.origin;
 
             if (!url) {
                 alert('Please enter a URL');
